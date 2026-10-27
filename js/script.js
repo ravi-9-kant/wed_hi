@@ -439,3 +439,4 @@ document.querySelectorAll('.venue-map-link').forEach(link => {
   }
   requestAnimationFrame(animate);
 })();
+
