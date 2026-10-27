@@ -144,7 +144,8 @@ document.addEventListener('visibilitychange', () => {
 function createCelebrationBurst() {
   const flowerSymbols = ['❀', '❁', '✿', '🌸'];
   const sparkleSymbols = ['✦', '✨', '★'];
-  const totalCount = 42;
+  const isMobile = window.innerWidth < 640;
+  const totalCount = isMobile ? 20 : 38;
 
   for (let i = 0; i < totalCount; i++) {
     const el = document.createElement('div');
@@ -187,24 +188,22 @@ function createCelebrationBurst() {
   }
 }
 
-// Gentle ambient marigold fall during viewing
+// Gentle ambient marigold fall during viewing (lightweight symbols on mobile)
 setInterval(() => {
   if (document.hidden || !contentSection || contentSection.classList.contains('hidden')) return;
-  // Drift 1-2 petals occasionally for live festive feel
-  for (let i = 0; i < 2; i++) {
+  const isMobile = window.innerWidth < 640;
+  const count = isMobile ? 1 : 2;
+  for (let i = 0; i < count; i++) {
     const el = document.createElement('div');
-    el.className = 'celebration-item marigold-petal';
-    const img = document.createElement('img');
-    img.src = 'assets/images/marigold.png';
-    img.alt = '';
-    el.appendChild(img);
-    el.style.left = `${Math.random() * 95}vw`;
+    el.className = 'celebration-item flower-symbol';
+    el.textContent = ['🌸', '❀', '✿'][Math.floor(Math.random() * 3)];
+    el.style.left = `${Math.random() * 92}vw`;
     el.style.top = `-30px`;
-    el.style.animationDuration = `${4 + Math.random() * 2.5}s`;
+    el.style.animationDuration = `${isMobile ? 3.5 : 5 + Math.random() * 2}s`;
     celebrationLayer.appendChild(el);
-    setTimeout(() => el.remove(), 7000);
+    setTimeout(() => el.remove(), 5500);
   }
-}, 3200);
+}, 4500);
 
 // ==========================================
 // FEATURE 2: INTERACTIVE AKSHAT & PUSHPA ASHIRWAD (BLESSINGS ON TAP)
@@ -271,10 +270,45 @@ function createAshirwadBlessing(clientX, clientY) {
   }
 }
 
-document.addEventListener('pointerdown', (e) => {
-  // If clicking on links or buttons, let the primary click action proceed cleanly
+// Mobile-optimized tap blessing (never triggers during swipe/scroll!)
+let touchStartX = 0;
+let touchStartY = 0;
+let touchStartTime = 0;
+let lastBlessingTime = 0;
+
+document.addEventListener('touchstart', (e) => {
+  if (e.touches && e.touches.length === 1) {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+    touchStartTime = Date.now();
+  }
+}, { passive: true });
+
+document.addEventListener('touchend', (e) => {
+  const dt = Date.now() - touchStartTime;
+  if (dt < 300 && e.changedTouches && e.changedTouches.length === 1) {
+    const dx = Math.abs(e.changedTouches[0].clientX - touchStartX);
+    const dy = Math.abs(e.changedTouches[0].clientY - touchStartY);
+    if (dx < 12 && dy < 12) {
+      // Deliberate clean tap, not a scroll!
+      const target = document.elementFromPoint(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+      if (target && (target.closest('a') || target.closest('button') || target.closest('.venue-map-link'))) return;
+      const now = Date.now();
+      if (now - lastBlessingTime > 450) {
+        lastBlessingTime = now;
+        createAshirwadBlessing(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+      }
+    }
+  }
+}, { passive: true });
+
+document.addEventListener('click', (e) => {
+  // Desktop mouse clicks only (touch clicks already handled by touchend)
+  if (e.pointerType === 'touch') return;
   if (e.target.closest('a') || e.target.closest('button')) return;
-  if (e.clientX && e.clientY) {
+  const now = Date.now();
+  if (now - lastBlessingTime > 400) {
+    lastBlessingTime = now;
     createAshirwadBlessing(e.clientX, e.clientY);
   }
 });
@@ -336,27 +370,28 @@ if (notepadPage) {
   });
 }
 
-// 3D Tilt for Event Cards on hover
-document.querySelectorAll('.card-3d').forEach(card => {
-  const inner = card.querySelector('.card-3d-inner');
-  if (!inner) return;
+// 3D Tilt for Event Cards on hover (desktop only with fine mouse pointer)
+if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+  document.querySelectorAll('.card-3d').forEach(card => {
+    const inner = card.querySelector('.card-3d-inner');
+    if (!inner) return;
 
-  card.addEventListener('mousemove', (e) => {
-    // If hovering directly over interactive links, pause tilt to guarantee perfect click hit-testing
-    if (e.target.closest('.venue-map-link')) {
-      inner.style.transform = 'translateY(-3px)';
-      return;
-    }
-    const rect = card.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width - 0.5;
-    const y = (e.clientY - rect.top) / rect.height - 0.5;
-    inner.style.transform = `perspective(1000px) rotateY(${x * 12}deg) rotateX(${-y * 12}deg) translateY(-6px)`;
-  });
+    card.addEventListener('mousemove', (e) => {
+      if (e.target.closest('.venue-map-link')) {
+        inner.style.transform = 'translateY(-3px)';
+        return;
+      }
+      const rect = card.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width - 0.5;
+      const y = (e.clientY - rect.top) / rect.height - 0.5;
+      inner.style.transform = `perspective(1000px) rotateY(${x * 12}deg) rotateX(${-y * 12}deg) translateY(-6px)`;
+    });
 
-  card.addEventListener('mouseleave', () => {
-    inner.style.transform = '';
+    card.addEventListener('mouseleave', () => {
+      inner.style.transform = '';
+    });
   });
-});
+}
 
 // Explicit reliable Google Map link handler
 document.querySelectorAll('.venue-map-link').forEach(link => {
@@ -371,19 +406,27 @@ document.querySelectorAll('.venue-map-link').forEach(link => {
 });
 
 // ==========================================
-// AMBIENT FESTIVE DIYA SPARKS CANVAS
+// AMBIENT FESTIVE DIYA SPARKS CANVAS (SILKY 60FPS NO-FLICKER)
 // ==========================================
 (function initFestiveCanvas() {
   const canvas = document.getElementById('festiveCanvas');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
-  let width, height;
+  let width = 0, height = 0;
   let particles = [];
-  const particleCount = 28;
+  const isMobile = window.innerWidth < 640;
+  const particleCount = isMobile ? 12 : 24;
 
+  let lastW = 0;
   function resize() {
-    width = canvas.width = window.innerWidth;
-    height = canvas.height = window.innerHeight;
+    const newW = window.innerWidth;
+    const newH = window.innerHeight;
+    // CRUCIAL: Do NOT re-size canvas on mobile URL-bar scroll collapses (prevents white screen flickering!)
+    if (!width || Math.abs(newW - lastW) > 20 || Math.abs(newH - height) > 160) {
+      width = canvas.width = newW;
+      height = canvas.height = newH;
+      lastW = newW;
+    }
   }
   window.addEventListener('resize', resize);
   resize();
@@ -393,33 +436,30 @@ document.querySelectorAll('.venue-map-link').forEach(link => {
       this.reset(true);
     }
     reset(initial = false) {
-      this.x = Math.random() * width;
-      this.y = initial ? Math.random() * height : height + 10;
-      this.size = 1.2 + Math.random() * 2.8;
-      this.speedY = 0.4 + Math.random() * 0.9;
-      this.speedX = (Math.random() - 0.5) * 0.5;
-      this.alpha = 0.1 + Math.random() * 0.6;
+      this.x = Math.random() * (width || window.innerWidth);
+      this.y = initial ? Math.random() * (height || window.innerHeight) : (height || window.innerHeight) + 10;
+      this.size = 1.0 + Math.random() * 2.2;
+      this.speedY = 0.35 + Math.random() * 0.7;
+      this.speedX = (Math.random() - 0.5) * 0.4;
+      this.alpha = 0.15 + Math.random() * 0.55;
       this.pulseSpeed = 0.02 + Math.random() * 0.03;
-      this.hue = 40 + Math.random() * 15; // Golden warm hue
+      this.hue = 40 + Math.random() * 15;
     }
     update() {
       this.y -= this.speedY;
-      this.x += Math.sin(this.y * 0.01) * 0.4 + this.speedX;
-      this.alpha += Math.sin(Date.now() * this.pulseSpeed * 0.01) * 0.015;
+      this.x += Math.sin(this.y * 0.01) * 0.3 + this.speedX;
+      this.alpha += Math.sin(Date.now() * this.pulseSpeed * 0.01) * 0.012;
 
       if (this.y < -20 || this.x < -20 || this.x > width + 20) {
         this.reset();
       }
     }
     draw() {
-      ctx.save();
+      // High-performance clean draw without expensive shadowBlur filter passes
       ctx.beginPath();
       ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-      ctx.fillStyle = `hsla(${this.hue}, 95%, 65%, ${Math.max(0.05, Math.min(0.8, this.alpha))})`;
-      ctx.shadowBlur = 10;
-      ctx.shadowColor = `hsl(${this.hue}, 100%, 55%)`;
+      ctx.fillStyle = `hsla(${this.hue}, 95%, 65%, ${Math.max(0.05, Math.min(0.75, this.alpha))})`;
       ctx.fill();
-      ctx.restore();
     }
   }
 
@@ -428,12 +468,12 @@ document.querySelectorAll('.venue-map-link').forEach(link => {
   }
 
   function animate() {
-    if (!document.hidden) {
+    if (!document.hidden && width > 0) {
       ctx.clearRect(0, 0, width, height);
-      particles.forEach(p => {
-        p.update();
-        p.draw();
-      });
+      for (let i = 0; i < particles.length; i++) {
+        particles[i].update();
+        particles[i].draw();
+      }
     }
     requestAnimationFrame(animate);
   }
