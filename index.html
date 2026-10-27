@@ -21,6 +21,8 @@
 </head>
 <body class="hindi-mode">
   <div class="page-shell">
+    <canvas id="festiveCanvas" class="festive-canvas" aria-hidden="true"></canvas>
+
     <header class="topbar">
       <!-- CRITICAL: Do NOT delete this langToggle button. It is hidden, but script.js needs it to prevent crashing! -->
       <button id="langToggle" class="icon-btn lang-btn" type="button" style="display: none;">EN</button>
@@ -32,27 +34,50 @@
 
     <main class="invite-app">
       
-      <!-- COVER STAGE -->
+      <!-- COVER STAGE (Notepad Flip) -->
       <section class="cover-stage" id="coverStage">
-        <div class="notepad-page" id="notepadPage">
-          
+        <!-- Floating 3D Golden Mandala Aura Behind Cover -->
+        <div class="cover-mandala-halo" aria-hidden="true">
+          <img src="assets/images/mandala.png" alt="" />
+        </div>
+
+        <div class="notepad-page" id="notepadPage" onclick="openInvite()">
+          <div class="card-shimmer" aria-hidden="true"></div>
+          <div class="corner-filigree top-left"></div>
+          <div class="corner-filigree top-right"></div>
+          <div class="corner-filigree bottom-left"></div>
+          <div class="corner-filigree bottom-right"></div>
+
           <div class="cover-top-text">
             <span class="hindi-only">ॐ श्री गणेशाय नमः</span>
           </div>
 
           <img src="assets/images/cover.png" alt="Invitation Cover" class="cover-image" />
           
-          <button class="open-invite-btn" id="openInviteBtn" type="button">
+          <button class="open-invite-btn royal-seal-btn" id="openInviteBtn" type="button" onclick="openInvite()">
+            <span class="seal-icon">✨</span>
             <span class="hindi-only">निमंत्रण खोलें</span>
           </button>
         </div>
       </section>
 
       <div class="celebration-layer" id="celebrationLayer" aria-hidden="true"></div>
+      <div class="ashirwad-container" id="ashirwadContainer" aria-hidden="true"></div>
 
       <!-- MAIN INVITATION CONTENT -->
       <section class="content-section hidden" id="contentSection">
         <div class="royal-frame">
+          <!-- Festive Hanging Toran -->
+          <div class="royal-toran" aria-hidden="true">
+            <div class="toran-string">
+              <span class="toran-bell left-bell">🔔</span>
+              <img src="assets/images/marigold.png" alt="" class="toran-flower" />
+              <img src="assets/images/marigold.png" alt="" class="toran-flower center-flower" />
+              <img src="assets/images/marigold.png" alt="" class="toran-flower" />
+              <span class="toran-bell right-bell">🔔</span>
+            </div>
+          </div>
+
           <div class="ornament top-left"></div>
           <div class="ornament top-right"></div>
           <div class="ornament bottom-left"></div>
@@ -60,7 +85,10 @@
 
           <!-- Ganesha Invocation -->
           <section class="ganesha-section" id="ganeshaSection">
-            <img src="assets/images/ganesha.png" alt="Lord Ganesha" class="ganesha-img" />
+            <div class="ganesha-aura-wrap">
+              <img src="assets/images/mandala.png" alt="" class="ganesha-mandala-halo" aria-hidden="true" />
+              <img src="assets/images/ganesha.png" alt="Lord Ganesha" class="ganesha-img" />
+            </div>
             <div class="mantra-block">
               <div class="mantra-text hindi-only">
                 वक्रतुण्ड महाकाय सूर्यकोटि समप्रभः।<br>
@@ -83,7 +111,31 @@
               </div>
               
               <p class="invite-text-line small-text">(सुपौत्र स्व० श्रीमती अतर कली एवं स्व० श्री तारा चन्द धीमान)</p>
-              <p class="invite-text-line highlight-sang">संग</p>
+
+              <!-- Auspicious Gathbandhan Sacred Knot -->
+              <div class="gathbandhan-wrap" aria-label="गठबंधन">
+                <svg class="gathbandhan-knot-svg" viewBox="0 0 240 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <defs>
+                    <linearGradient id="goldKnotGradHi" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#ffd700" />
+                      <stop offset="35%" stop-color="#fff099" />
+                      <stop offset="70%" stop-color="#d4af37" />
+                      <stop offset="100%" stop-color="#996515" />
+                    </linearGradient>
+                    <filter id="knotGlowHi" x="-20%" y="-20%" width="140%" height="140%">
+                      <feGaussianBlur stdDeviation="2.5" result="glow"/>
+                      <feComposite in="SourceGraphic" in2="glow" operator="over"/>
+                    </filter>
+                  </defs>
+                  <!-- Intertwined golden threads -->
+                  <path d="M 15,30 Q 60,10 100,28 T 140,32 Q 180,50 225,30" stroke="url(#goldKnotGradHi)" stroke-width="4.5" stroke-linecap="round" fill="none" filter="url(#knotGlowHi)" class="knot-thread-1"/>
+                  <path d="M 15,30 Q 60,50 100,32 T 140,28 Q 180,10 225,30" stroke="url(#goldKnotGradHi)" stroke-width="3" stroke-linecap="round" stroke-dasharray="6,4" fill="none" class="knot-thread-2"/>
+                  <!-- Center Auspicious Knot Loops -->
+                  <circle cx="120" cy="30" r="14" stroke="url(#goldKnotGradHi)" stroke-width="3.5" fill="rgba(128, 0, 32, 0.45)" class="knot-center-loop"/>
+                  <circle cx="120" cy="30" r="5" fill="#ffe066" class="knot-center-gem"/>
+                </svg>
+                <span class="gathbandhan-text">संग</span>
+              </div>
               
               <div class="inline-couple-display">
                 <img src="assets/images/ApurvaHi.png" class="inline-name" alt="अपूर्वा" />
@@ -93,9 +145,20 @@
               <p class="invite-text-line small-text">(सुपुत्री श्रीमती बोबेश धीमान एवं श्री सुशील कुमार<br>निवासी जिला मुजफ्फरनगर)</p>
               <p class="invite-text-line">के</p>
               
+              <!-- Golden Calligraphy Stroke Reveal (Swarna Rekha) -->
+              <div class="swarna-rekha-wrap">
+                <span class="swarna-rekha stroke-left"></span>
+                <span class="swarna-sparkle">❖</span>
+                <span class="swarna-rekha stroke-right"></span>
+              </div>
               <h2 class="bandhan-title">॥ दाम्पत्य बन्धन ॥</h2>
+              <div class="swarna-rekha-wrap swarna-bottom">
+                <span class="swarna-rekha stroke-left"></span>
+                <span class="swarna-sparkle">❖</span>
+                <span class="swarna-rekha stroke-right"></span>
+              </div>
               
-              <p class="invite-text-line">के शुभ पावन अवसर पर आपको सादर आमन्त्रित करते है।</p>
+              <p class="invite-text-line">के पावन अवसर पर आपको सादर निमन्त्रित करते है।</p>
               <p class="letter-footer">
                 कृपया पधारकर नव-युगल को शुभ-आशीर्वाद प्रदान कर हमें अनुग्रहीत करें।<br>आपकी शुभ-उपस्थिति से हमारी खुशी में अभिवृद्धि होगी।
               </p>
@@ -104,12 +167,15 @@
 
           <!-- Kalash & Shloka -->
           <section class="shloka-section">
-            <img src="assets/images/kalash.png" alt="Kalash" class="kalash-center-img" />
+            <div class="kalash-aura-wrap">
+              <div class="kalash-diya-glow" aria-hidden="true"></div>
+              <img src="assets/images/kalash.png" alt="Kalash" class="kalash-center-img" />
+            </div>
             <p class="shloka-text hindi-only">
               विघ्न हरण मंगल करण, गणनायक गणराज।<br>
               प्रथम निमन्त्रण आपको, सफल कीजो सब काज।।
             </p>
-            <img src="assets/images/MK.png" alt="Mangalik Karyakram" class="mk-banner" />
+            <img src="assets/images/mk.png" alt="Mangalik Karyakram" class="mk-banner" />
           </section>
 
           <!-- Events -->
@@ -119,26 +185,28 @@
             </div>
             
             <div class="event-grid single-col">
-              <div class="event-group">
-                <img src="assets/images/23november.png" alt="23 November 2026 Calendar" class="calendar-preview" />
-                <div class="event-box">
-                  <div class="detail-row">
-                    <span class="event-label hindi-only">📅 दिनांक:</span>
-                    <strong class="event-value hindi-only">सोमवार, 23 नवम्बर 2026</strong>
-                  </div>
-                  <div class="detail-row">
-                    <span class="event-label hindi-only">⏰ कार्यक्रम:</span>
-                    <strong class="event-value hindi-only schedule-list">
-                      दोपहर 12:00 बजे - प्रीतिभोज<br>
-                      दोपहर 02:00 बजे - वाग्दान संस्कार (सगाई)<br>
-                      सायं 04:00 बजे - मंढा
-                    </strong>
-                  </div>
-                  <div class="detail-row">
-                    <span class="event-label hindi-only">📍 स्थान:</span>
-                    <strong class="event-value hindi-only">शगुन पैलेस</strong>
-                    <small class="hindi-only">867, भोपा रोड, पटेल नगर, नई मंडी, मुज़फ्फरनगर</small>
-                    <a href="https://maps.app.goo.gl/Qrh94ReZDBRTNd1i6" target="_blank" rel="noopener" class="venue-map-link">Google Map ⚲</a>
+              <div class="card-3d">
+                <div class="card-3d-inner event-group">
+                  <img src="assets/images/23november.png" alt="23 November 2026 Calendar" class="calendar-preview" />
+                  <div class="event-box">
+                    <div class="detail-row">
+                      <span class="event-label hindi-only">📅 दिनांक:</span>
+                      <strong class="event-value hindi-only">सोमवार, 23 नवम्बर 2026</strong>
+                    </div>
+                    <div class="detail-row">
+                      <span class="event-label hindi-only">⏰ कार्यक्रम:</span>
+                      <strong class="event-value hindi-only schedule-list">
+                        दोपहर 12:00 बजे - प्रीतिभोज<br>
+                        दोपहर 02:00 बजे - वाग्दान संस्कार (सगाई)<br>
+                        सायं 04:00 बजे - मंढा
+                      </strong>
+                    </div>
+                    <div class="detail-row">
+                      <span class="event-label hindi-only">📍 स्थान:</span>
+                      <strong class="event-value hindi-only">शगुन पैलेस</strong>
+                      <small class="hindi-only">867, भोपा रोड, पटेल नगर, नई मंडी, मुज़फ्फरनगर</small>
+                      <a href="https://www.google.com/maps/place/Shagun+Palace/@29.4729742,77.7222751,17z/data=!3m1!4b1!4m6!3m5!1s0x390c1b407975af3f:0xb76ed2619c27b611!8m2!3d29.4729742!4d77.72485!16s%2Fg%2F11c7sq0_7_?entry=ttu" target="_blank" rel="noopener" class="venue-map-link">Google Map ⚲</a>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -155,25 +223,37 @@
             </div>
 
             <div class="event-grid single-col">
-              <div class="event-group">
-                <img src="assets/images/24november.png" alt="24 November 2026 Calendar" class="calendar-preview" />
-                <div class="event-box">
-                  <div class="detail-row">
-                    <span class="event-label hindi-only">📅 दिनांक:</span>
-                    <strong class="event-value hindi-only">मंगलवार, 24 नवम्बर 2026</strong>
-                  </div>
-                  <div class="detail-row">
-                    <span class="event-label hindi-only">⏰ कार्यक्रम:</span>
-                    <strong class="event-value hindi-only schedule-list">
-                      शाम 6:00 बजे - बारात<br>
-                      रात 8:00 बजे - रात्रिभोज
-                    </strong>
-                  </div>
-                  <div class="detail-row">
-                    <span class="event-label hindi-only">📍 स्थान:</span>
-                    <strong class="event-value hindi-only">अभिनन्दन पैलेस</strong>
-                    <small class="hindi-only">स्टेट हाईवे 59, रूड़की रोड, मुज़फ्फरनगर</small>
-                    <a href="https://maps.app.goo.gl/6S5ik45MY2hr9djNA" target="_blank" rel="noopener" class="venue-map-link">Google Map ⚲</a>
+              <div class="card-3d wedding-card-agni">
+                <!-- Pavitra Agni Sacred Flame & Rising Embers Backdrop -->
+                <div class="pavitra-agni-aura" aria-hidden="true">
+                  <div class="sacred-flame-core"></div>
+                  <div class="agni-ember e1"></div>
+                  <div class="agni-ember e2"></div>
+                  <div class="agni-ember e3"></div>
+                  <div class="agni-ember e4"></div>
+                  <div class="agni-ember e5"></div>
+                </div>
+
+                <div class="card-3d-inner event-group">
+                  <img src="assets/images/24november.png" alt="24 November 2026 Calendar" class="calendar-preview" />
+                  <div class="event-box">
+                    <div class="detail-row">
+                      <span class="event-label hindi-only">📅 दिनांक:</span>
+                      <strong class="event-value hindi-only">मंगलवार, 24 नवम्बर 2026</strong>
+                    </div>
+                    <div class="detail-row">
+                      <span class="event-label hindi-only">⏰ कार्यक्रम:</span>
+                      <strong class="event-value hindi-only schedule-list">
+                        शाम 6:00 बजे - बारात<br>
+                        रात 8:00 बजे - रात्रिभोज
+                      </strong>
+                    </div>
+                    <div class="detail-row">
+                      <span class="event-label hindi-only">📍 स्थान:</span>
+                      <strong class="event-value hindi-only">अभिनन्दन पैलेस</strong>
+                      <small class="hindi-only">स्टेट हाईवे 59, रूड़की रोड, मुज़फ्फरनगर</small>
+                      <a href="https://www.google.com/maps/place/Abhinandan+Palace/@29.501159,77.6980472,17z/data=!4m6!3m5!1s0x390c1c870b8a3a97:0x41d3e4a11fcc7c8b!8m2!3d29.501159!4d77.7006221!16s%2Fg%2F11cn92zf6g?entry=ttu" target="_blank" rel="noopener" class="venue-map-link">Google Map ⚲</a>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -206,19 +286,21 @@
               <div class="clock-glow clock-glow-a"></div>
               <div class="clock-glow clock-glow-b"></div>
               <div class="digital-clock">
-                <div class="clock-box"><span id="days">00</span><small>Days</small></div>
-                <div class="clock-box"><span id="hours">00</span><small>Hours</small></div>
-                <div class="clock-box"><span id="minutes">00</span><small>Minutes</small></div>
-                <div class="clock-box"><span id="seconds">00</span><small>Seconds</small></div>
+                <div class="clock-box" id="box-days"><span id="days">00</span><small>दिन</small></div>
+                <div class="clock-box" id="box-hours"><span id="hours">00</span><small>घंटे</small></div>
+                <div class="clock-box" id="box-minutes"><span id="minutes">00</span><small>मिनट</small></div>
+                <div class="clock-box" id="box-seconds"><span id="seconds">00</span><small>सेकंड</small></div>
               </div>
             </div>
           </section>
 
+          <!-- Footer Actions (Only WhatsApp) -->
           <section class="footer-actions two-buttons">
             <a class="action-btn wa-btn" href="https://wa.me/919454404754" target="_blank" rel="noopener" aria-label="WhatsApp 9454404754">
               <span class="wa-icon">✆</span>
               <span class="wa-number">9454404754</span>
             </a>
+
             <a class="action-btn wa-btn" href="https://wa.me/918299153513" target="_blank" rel="noopener" aria-label="WhatsApp 8299153513">
               <span class="wa-icon">✆</span>
               <span class="wa-number">8299153513</span>
