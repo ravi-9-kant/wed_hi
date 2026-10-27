@@ -171,7 +171,7 @@ body.hindi-mode {
   height: min(92vw, 680px);
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%) translateZ(-40px);
+  transform: translate(-50%, -50%);
   pointer-events: none;
   z-index: 1;
   opacity: 0.28;
@@ -473,8 +473,13 @@ body.hindi-mode {
 @keyframes royalParchmentReveal {
   0% {
     opacity: 0;
-    transform: perspective(1400px) translateY(50px) rotateX(8deg) scale(0.95);
+    transform: translateY(30px) scale(0.97);
   }
+  100% {
+    opacity: 1;
+    transform: none; /* Crucial: clears 3D matrix so mobile scroll is native 60-120fps! */
+  }
+}
   100% {
     opacity: 1;
     transform: perspective(1400px) translateY(0) rotateX(0deg) scale(1);
@@ -642,7 +647,7 @@ body.hindi-mode {
   margin-top: 24px;
   box-shadow: 0 12px 30px rgba(128, 0, 0, 0.08), inset 0 0 20px rgba(212, 175, 55, 0.1);
   position: relative;
-  backdrop-filter: blur(4px);
+  /* backdrop-filter removed for mobile performance */
 }
 
 .salutation {
@@ -697,7 +702,7 @@ body.hindi-mode {
   position: relative;
   display: inline-block;
   letter-spacing: 0.03em;
-  animation: titleGlint 4s ease-in-out infinite alternate;
+  /* static text-shadow gives 100% crisp sharpness without continuous GPU text rasterization */
 }
 
 @keyframes titleGlint {
@@ -832,7 +837,7 @@ body.hindi-mode {
   background: rgba(255, 255, 240, 0.75);
   text-align: center;
   box-shadow: 0 12px 30px rgba(128, 0, 0, 0.08), inset 0 0 18px rgba(212, 175, 55, 0.08);
-  backdrop-filter: blur(4px);
+  /* backdrop-filter removed for mobile performance */
 }
 
 .event-phase-header {
@@ -1462,4 +1467,19 @@ body.hindi-mode {
   .digital-clock { gap: 16px; }
   .clock-box { padding: 16px 10px; }
   .clock-box span { font-size: 2.2rem; }
+}
+
+/* Hardware acceleration stability for mobile browsers (prevents compositing flicker) */
+.page-shell,
+.royal-frame,
+.notepad-page,
+.content-section,
+.cover-stage {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-transform-style: flat;
+}
+
+.notepad-page {
+  transform: translateZ(1px);
 }
